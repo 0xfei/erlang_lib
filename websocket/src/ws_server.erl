@@ -23,9 +23,9 @@
     ref :: any()
 }).
 
--spec start_link([Ref::atom()]) -> {ok, pid()}.
-start_link([Ref]) ->
-    gen_server:start_link({local, ?MODULE}, ?MODULE, [Ref], []).
+-spec start_link(Ref::any()) -> {ok, pid()}.
+start_link(Ref) ->
+    gen_server:start_link({local, ?MODULE}, ?MODULE, Ref, []).
 
 -spec connect(pid()) -> ok.
 connect(Pid) ->
@@ -35,13 +35,13 @@ connect(Pid) ->
 disconnect(Pid) ->
     gen_server:cast(?MODULE, {disconnect, Pid}).
 
--spec send_message(Msg::string()) -> ok.
-send_message(Msg) ->
-    gen_server:cast(?MODULE, {send_message, Msg}).
+-spec send_message({pid(), string()}) -> ok.
+send_message({Pid,Msg}) ->
+    gen_server:cast(?MODULE, {send_message, Pid, Msg}).
 
 
 %% callback
-init([Ref]) ->
+init(Ref) ->
     {ok, #state{ref = Ref}}.
 
 handle_call(_Msg, _From, State) ->
@@ -49,22 +49,22 @@ handle_call(_Msg, _From, State) ->
 
 handle_cast({connect, Pid}, State=#state{ref = Ref}) ->
     ets:insert(Ref, {Pid, pid}),
-    {noreply, ok, State};
+    {noreply, State};
 handle_cast({disconnect, Pid}, State=#state{ref = Ref}) ->
     ets:delete(Ref, Pid),
-    {noreply, ok, State};
-handle_cast({send_message, Msg}, State=#state{ref = Ref}) ->
-    [erlang:send(Pid, {message, Pid, Msg}) ||
+    {noreply, State};
+handle_cast({send_message, From, Msg}, State=#state{ref = Ref}) ->
+    [erlang:send(Pid, {message, From, Msg}) ||
         Pid <- ets:select(Ref, [{{'$1','$2'}, [], ['$1']}])],
-    {noreply, ok, State};
+    {noreply, State};
 handle_cast(_Msg, State) ->
-    {noreply, ok, State}.
+    {noreply, State}.
 
 handle_info(_Msg, State) ->
-    {noreply, ok, State}.
+    {noreply, State}.
 
 terminate(_Reason, State) ->
-    {noreply, ok, State}.
+    {noreply, State}.
 
 code_change(_OldVsn, State, _Extra) ->
     {ok, State}.

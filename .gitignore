@@ -1,1 +1,6 @@
 *.beam
+*/.erlang.mk
+*/_rel
+*/deps
+*/ebin
+*/websocket.d

@@ -48,9 +48,8 @@
           if(websocket.readyState == websocket.OPEN){
               txt = $("#send_txt").val();
               websocket.send(txt);
-              showScreen('sending: ' + txt); 
           } else {
-               showScreen('websocket is not connected'); 
+              showScreen('websocket is not connected'); 
           };
       };
 
@@ -65,11 +64,11 @@
       };  
 
       function onMessage(evt) { 
-          showScreen('<span style="color: blue;">RESPONSE: ' + evt.data+ '</span>'); 
+          showScreen('<span style="color: blue;">' + evt.data+ '</span>'); 
       };  
 
       function onError(evt) {
-          showScreen('<span style="color: red;">ERROR: ' + evt.data+ '</span>');
+          showScreen('<span style="color: red;">' + evt.data+ '</span>');
       };
 
       function showScreen(txt) { 
