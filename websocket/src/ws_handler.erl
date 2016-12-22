@@ -29,13 +29,15 @@ websocket_info({timeout, _Ref, Msg}, State) ->
 
 %% message response
 websocket_info({message, Pid, Msg}, State) when Pid =:= self() ->
-	Show = <<"[ME]  ", Msg/binary>>,
+	Show = <<"[ME]    ", Msg/binary>>,
 	{reply, {text, Show}, State};
-websocket_info({message, _Pid, Msg}, State) ->
+websocket_info({message, Pid, Msg}, State) ->
 	%% here pid() cnanot add to binary
 	%% and Msg must be binary
-	Show = <<"[Ta]  ", Msg/binary>>,
+    Name = ws_server:name(Pid),
+	Show = <<"[", Name/binary, "]  ", Msg/binary>>,
 	{reply, {text, Show}, State};
+
 websocket_info(_Info, State) ->
 	io:format("websocket_info ~p~n", [_Info]),
 	{ok, State}.
