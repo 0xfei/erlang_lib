@@ -13,7 +13,6 @@ init(Req, _Opts) ->
 
 websocket_init(State) ->
 	ws_server:connect(self()),
-	erlang:start_timer(1000, self(), <<"Hello! I'm in!">>),
 	{ok, State#state{pid=self()}}.
 
 websocket_handle({text, Msg}, State) ->
@@ -23,7 +22,6 @@ websocket_handle(_Data, State) ->
 	{ok, State}.
 
 websocket_info({timeout, _Ref, Msg}, State) ->
-	erlang:start_timer(600000, self(), <<"How' you doin'?">>),
 	ws_server:send_message({self(), Msg}),
 	{ok, State};
 

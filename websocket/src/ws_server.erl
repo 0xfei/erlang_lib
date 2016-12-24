@@ -60,16 +60,20 @@ handle_call(_Msg, _From, State) ->
     {reply, ok, State}.
 
 handle_cast({connect, Pid}, State=#state{ref = Ref}) ->
+	Name = random_name(),
+	ws_data:insert_user(Pid, Name),
     ets:insert(Ref, {{Pid, pid}, Pid}),
-    ets:insert(Ref, {{Pid, name}, random_name()}),
+    ets:insert(Ref, {{Pid, name}, Name}),
     {noreply, State};
 
 handle_cast({disconnect, Pid}, State=#state{ref = Ref}) ->
+	ws_data:remove_user(Pid),
     ets:delete(Ref, {Pid,pid}),
-    ets:delete(Ref, {Pid, name}),
+    ets:delete(Ref, {Pid,name}),
     {noreply, State};
 
 handle_cast({send_message, From, Msg}, State=#state{ref = Ref}) ->
+	ws_data:insert_msg(From, Msg),
     [erlang:send(Pid, {message, From, Msg}) ||
         [Pid] <- ets:match(Ref, {{'$1', pid}, '$1'})],
     {noreply, State};

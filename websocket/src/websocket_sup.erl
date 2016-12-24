@@ -14,6 +14,7 @@
 
 -spec start_link() -> {ok, pid()}.
 start_link() ->
+	ok = mnesia:start(),
 	?MODULE = ets:new(?MODULE, [
 		ordered_set, public, named_table]),
 	supervisor:start_link({local, ?MODULE}, ?MODULE, [?MODULE]).
@@ -21,6 +22,12 @@ start_link() ->
 %% supervisor.
 
 init([Ref]) ->
-	Procs = [#{id => ws_server, start => {ws_server, start_link, [Ref]},
-		restart => permanent}],
+	Procs = [#{id => ws_server, 
+			   start => {ws_server, start_link, [Ref]},
+			   restart => permanent},
+			 #{id => ws_data,
+			   start => {ws_data, start_link, []},
+			   restart => permanent}
+			],
 	{ok, {{one_for_one, 10, 10}, Procs}}.
+
