@@ -1,4 +1,5 @@
 *.beam
+.idea
 */.erlang.mk
 */_rel
 */deps
