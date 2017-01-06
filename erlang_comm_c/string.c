@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -81,9 +82,9 @@ int main()
         fprintf(f, "\n");
         
         if (fn == 1) {
-            res = strlen(buf + 1);
+            res = strlen((char*)buf + 1);
         } else if (fn == 2) {
-        	split_string(buf + 1, &s1, &s2);
+        	split_string((char*)buf + 1, &s1, &s2);
         	fprintf(f, "s1: %s, s2: %s\n", s1, s2);
             res = strcmp(s1,s2);
         }

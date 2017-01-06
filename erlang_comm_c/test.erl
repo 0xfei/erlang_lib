@@ -1,10 +1,10 @@
 %% simple test for string operation with c
 -module(test).
--export([start/0, stop/0, init/1]).
+-export([start/1, stop/0, init/1]).
 -export([strlen/1, strcmp/2]).
 
-start() ->
-    spawn(?MODULE, init, ["string.exe"]).
+start(Prog) ->
+    spawn(?MODULE, init, [Prog]).
 
 stop() ->
     ?MODULE ! stop.
