@@ -1,5 +1,5 @@
 %% simple test for string operation with c
--module(test).
+-module(complex2).
 -export([start/1, stop/0, init/1]).
 -export([strlen/1, strcmp/2]).
 
@@ -24,16 +24,16 @@ call_port(Msg) ->
 init(Prog) ->
     register(?MODULE, self()),
     process_flag(trap_exit, true),
-    Port = open_port({spawn, Prog}, [{packet, 2}]),
+    Port = open_port({spawn, Prog}, [{packet, 2}, binary]),
     loop(Port).
 
 loop(Port) ->
     receive
         {call, From, Msg} ->
-            Port ! {self(), {command, encode(Msg)}},
+            Port ! {self(), {command, term_to_binary(Msg)}},
             receive
                 {Port, {data, Data}} ->
-                    From ! {?MODULE, decode(Data)}
+                    From ! {?MODULE, binary_to_term(Data)}
             end,
             loop(Port);
         stop ->
@@ -46,7 +46,3 @@ loop(Port) ->
             exit(port_exit_error)
     end.
 
-encode({strlen, X}) -> [1, list_to_binary(X)];
-encode({strcmp, X, Y}) -> [2, list_to_binary(X), 0, list_to_binary(Y), 0].
-
-decode([Int]) -> Int.
