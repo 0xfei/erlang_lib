@@ -8,9 +8,18 @@ CLIBS_OPT = -fpic -bundle -flat_namespace -undefined suppress
 CPLUS_LIB = -lerl_interface -lei
 
 
-complie:
+ei:
 	$(CC) -o ei $(CPATH) comm.c ei.c $(CPLUS_LIB) 
+
+port_driver:
 	$(CC) -o port_driver.so $(CPATH) $(CLIBS_OPT) port_driver.c
+
+cnodes:
+	$(CC) -o cnodes $(CPATH) $(CPLUS_LIB) cnodes.c
+
+cnodec:
+	$(CC) -o cnodec $(CPATH) $(CPLUS_LIB) cnodec.c
+
 clean:
-	rm -rf ei port_driver *.so *.beam
+	rm -rf ei port_driver cnodes cnodec *.so *.beam
 
